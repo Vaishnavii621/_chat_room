@@ -23,14 +23,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Vaishnavii621/chat_app_pub.git"
+    "url": "git+https://github.com/Vaishnavii621/_chat_app.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Vaishnavii621/chat_app_pub/issues"
+    "url": "https://github.com/Vaishnavii621/_chat_app/issues"
   },
-  "homepage": "https://github.com/Vaishnavii621/chat_app_pub#readme",
+  "homepage": "https://github.com/Vaishnavii621/_chat_app#readme",
   "description": ""
 }
