@@ -14,7 +14,7 @@ const app = express();
 const server = http.createServer(app);
 
 // Use Render's PORT or fallback
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5000;
 
 // Dynamic CORS (for development)
 const allowedOrigins =
