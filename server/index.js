@@ -36,24 +36,20 @@ app.use(cookieParser());
 app.use("/api/v1/", auth);
 app.use("/api/v1/chat/", authUser, message);
 
-const clientBuildPath = path.join(__dirname, "..", "client", "dist");
+// Frontend (production)
+const __dirname1 = path.resolve();
+const frontendPath = path.join(__dirname1, "../client/dist");
 
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(clientBuildPath));
+  app.use(express.static(frontendPath));
 
   app.get("*", (req, res) => {
-    const indexHtmlPath = path.join(clientBuildPath, "index.html");
-
-    res.sendFile(indexHtmlPath, (err) => {
-      if (err) {
-        console.error("❌ Failed to send index.html:", err.message);
-        res.status(500).send("Internal server error: index.html not found");
-      }
-    });
+    res.sendFile(path.join(frontendPath, "index.html"));
   });
 } else {
+  // Dev fallback
   app.get("*", (req, res) => {
-    res.status(404).send("Frontend not built. Run `npm run build` in /client");
+    res.status(404).send("Frontend not built. Run npm run build in client/");
   });
 }
 
