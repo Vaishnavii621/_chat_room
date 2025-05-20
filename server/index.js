@@ -13,18 +13,15 @@ const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 
-// Use Render's PORT or fallback
-const PORT = process.env.PORT || 5000;
-
-// Dynamic CORS (for development)
+// Dynamic CORS for development only
 const allowedOrigins =
   process.env.NODE_ENV === "production"
-    ? [] // In production, frontend served from same origin
+    ? [] // In production, frontend is served by Express
     : ["http://localhost:5173"];
 
 app.use(
   cors({
-    origin: allowedOrigins.length ? allowedOrigins : "*",
+    origin: allowedOrigins.length ? allowedOrigins : undefined,
     credentials: true,
   })
 );
@@ -36,23 +33,41 @@ app.use(cookieParser());
 app.use("/api/v1/", auth);
 app.use("/api/v1/chat/", authUser, message);
 
-// Frontend (production)
+// Serve frontend (in production)
 const __dirname1 = path.resolve();
 const frontendPath = path.join(__dirname1, "../client/dist");
+const indexHtmlPath = path.join(frontendPath, "index.html");
 
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(frontendPath));
+  app.use(express.static(path.join(__dirname1, "../client/dist")));
 
   app.get("*", (req, res) => {
-    res.sendFile(path.join(frontendPath, "index.html"));
-  });
-} else {
-  // Dev fallback
-  app.get("*", (req, res) => {
-    res.status(404).send("Frontend not built. Run npm run build in client/");
+    res.sendFile(path.join(__dirname1, "../client/dist/index.html"));
   });
 }
+  else {
+    console.error("Frontend build files not found. Please build your frontend.");
+    app.get("*", (req, res) => {
+      res.status(404).send("Frontend not found");
+    });
+  }
 
+
+// Start server and connect DB
+const PORT = process.env.PORT || 5000;
+
+const start = async () => {
+  try {
+    await connectDB(process.env.MONGO_URI);
+    server.listen(PORT, () => {
+      console.log(`Server listening on port ${PORT}`);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+start();
 
 // Socket.IO setup
 const io = new Server(server, {
@@ -89,17 +104,3 @@ io.on("connection", (socket) => {
     io.emit("users-online", onlineUsers);
   });
 });
-
-// Connect DB & Start server
-const start = async () => {
-  try {
-    await connectDB(process.env.MONGO_URI);
-    server.listen(PORT, "0.0.0.0", () => {
-      console.log(`🚀 Server running on port ${PORT}`);
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-start();
