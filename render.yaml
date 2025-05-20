@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: chatroom-server
+    env: node
+    plan: free
+    buildCommand: |
+      cd client && npm install && npm run build
+      cd ../server && npm install
+    startCommand: node index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: url 
+        value: mongodb+srv://vaishnaviienp:rZHzOod4oOXgouYL@cluster0.jmnwyfx.mongodb.net/
+JWT_SECRET=jwebthb
+NODE_ENV=production 
+    rootDir: server
